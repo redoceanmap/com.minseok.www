@@ -1,9 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useUIStore } from "@/lib/uiStore";
 import { clearSession } from "@/lib/auth";
 import PixelAuthModal from "@/components/PixelAuthModal";
+
+const TITANIC_MENU = [
+  { href: "/titanic/predict", icon: "⚓", label: "CSV 업로드" },
+  { href: "/titanic/passengers", icon: "📋", label: "승객 명단" },
+];
 
 export default function NavBar() {
   const user = useUIStore((s) => s.user);
@@ -32,9 +38,9 @@ export default function NavBar() {
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-3 text-xs pixel-text">
-            <BrassPlate href="/titanic/predict" badge="DECK" icon="⚓">
+            <BrassPlateDropdown badge="DECK" icon="⚓" items={TITANIC_MENU}>
               타이타닉
-            </BrassPlate>
+            </BrassPlateDropdown>
             {user ? (
               <>
                 <span className="hidden sm:inline text-accent bg-hull px-3 py-2 border-4 border-accent shadow-pixel-sm">
@@ -54,6 +60,69 @@ export default function NavBar() {
       </header>
       <PixelAuthModal />
     </>
+  );
+}
+
+interface DropdownItem {
+  href: string;
+  icon: string;
+  label: string;
+}
+
+interface BrassPlateDropdownProps {
+  badge?: string;
+  icon?: string;
+  children: React.ReactNode;
+  items: DropdownItem[];
+}
+
+function BrassPlateDropdown({ badge, icon, children, items }: BrassPlateDropdownProps) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="relative pl-1.5 sm:pl-2 pr-2 sm:pr-3 py-1 sm:py-2 border-2 sm:border-4 whitespace-nowrap shadow-none sm:shadow-pixel-sm transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none inline-flex items-center gap-1.5 sm:gap-2 bg-gradient-to-b from-night-mid to-hull text-accent border-accent hover:from-hull hover:to-night-deep"
+      >
+        <span className="hidden sm:block absolute top-[3px] left-[3px] w-1 h-1 bg-accent" />
+        <span className="hidden sm:block absolute top-[3px] right-[3px] w-1 h-1 bg-accent" />
+        <span className="hidden sm:block absolute bottom-[3px] left-[3px] w-1 h-1 bg-accent" />
+        <span className="hidden sm:block absolute bottom-[3px] right-[3px] w-1 h-1 bg-accent" />
+        {badge && (
+          <span className="hidden sm:flex flex-col items-center leading-none">
+            <span className="pixel-text text-[7px] text-accent/60">{badge}</span>
+            <span className="mt-1 w-4 h-px bg-accent/40" />
+          </span>
+        )}
+        <span className="relative flex items-center gap-1.5">
+          {icon && <span className="text-[10px]">{icon}</span>}
+          <span>{children}</span>
+          <span className="pixel-text text-[8px] ml-0.5">▼</span>
+        </span>
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-full mt-1 z-50 bg-hull border-4 border-accent shadow-pixel-lg min-w-[140px]">
+          {items.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 px-3 py-2 pixel-text text-[10px] text-accent hover:bg-night-mid border-b-2 border-accent/30 last:border-b-0 whitespace-nowrap"
+            >
+              <span>{item.icon}</span>
+              <span>{item.label}</span>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 

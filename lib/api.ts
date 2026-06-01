@@ -1,6 +1,21 @@
 import { getToken } from "./auth";
 import type { LoginResponse } from "./types";
 
+export type Passenger = {
+  PassengerId: number;
+  Survived: number;
+  Pclass: number;
+  Name: string;
+  Sex: string;
+  Age: number | null;
+  SibSp: number;
+  Parch: number;
+  Ticket: string;
+  Fare: number;
+  Cabin: string | null;
+  Embarked: string | null;
+};
+
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
@@ -60,6 +75,9 @@ export const api = {
       "/chat",
       { method: "POST", body: JSON.stringify({ message, session_id: sessionId }) },
     ),
+
+  passengers: () =>
+    request<Passenger[]>("/titanic/walter/passengers"),
 
   weather: (lat: number, lon: number) =>
     fetch(`/api/weather?lat=${lat}&lon=${lon}`).then((r) => r.json()) as Promise<{

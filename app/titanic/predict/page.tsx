@@ -1,14 +1,23 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
 import PixelTitanic from "@/components/PixelTitanic";
 import PixelIceberg from "@/components/PixelIceberg";
 
 export default function TitanicPage() {
-  const [state, setState] = useState<{ file: File | null; error: string | null; dragOver: boolean }>({
+  const [state, setState] = useState<{
+    file: File | null;
+    error: string | null;
+    dragOver: boolean;
+    loading: boolean;
+    result: { count: number } | null;
+  }>({
     file: null,
     error: null,
     dragOver: false,
+    loading: false,
+    result: null,
   });
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -37,6 +46,28 @@ export default function TitanicPage() {
   };
 
   const onDragLeave = () => setState(prev => ({ ...prev, dragOver: false }));
+
+  const handleUpload = async () => {
+    if (!state.file) return;
+    setState(prev => ({ ...prev, loading: true, error: null, result: null }));
+    try {
+      const formData = new FormData();
+      formData.append("file", state.file);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/titanic/james/upload`,
+        { method: "POST", body: formData }
+      );
+      if (!res.ok) {
+        const err = await res.json();
+        setState(prev => ({ ...prev, loading: false, error: err.detail ?? "업로드 실패" }));
+        return;
+      }
+      const json = await res.json();
+      setState(prev => ({ ...prev, loading: false, result: json }));
+    } catch {
+      setState(prev => ({ ...prev, loading: false, error: "서버 연결 실패" }));
+    }
+  };
 
   const formatSize = (bytes: number) => {
     if (bytes < 1024) return `${bytes} B`;
@@ -109,6 +140,30 @@ export default function TitanicPage() {
           )}
         </div>
       </div>
+
+      {state.file && !state.result && (
+        <button
+          onClick={handleUpload}
+          disabled={state.loading}
+          className="mt-6 px-8 py-3 pixel-text text-sm bg-accent text-hull border-4 border-black shadow-pixel-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {state.loading ? "UPLOADING..." : "UPLOAD"}
+        </button>
+      )}
+
+      {state.result && (
+        <div className="mt-4 flex flex-col items-center gap-3">
+          <p className="pixel-text text-[10px] text-glow border-4 border-glow px-4 py-2 shadow-pixel-sm">
+            LOADED {state.result.count} PASSENGERS
+          </p>
+          <Link
+            href="/titanic/passengers"
+            className="pixel-text text-[10px] text-hull bg-accent px-4 py-2 border-4 border-black shadow-pixel-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
+          >
+            VIEW MANIFEST →
+          </Link>
+        </div>
+      )}
 
       {state.error && (
         <p className="mt-4 pixel-text text-[10px] text-hull bg-glow border-4 border-black px-4 py-2 shadow-pixel-sm">
