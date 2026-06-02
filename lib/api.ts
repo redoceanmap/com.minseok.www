@@ -55,7 +55,32 @@ function safeJson(text: string): unknown {
   }
 }
 
+export type UploadResult = {
+  count: number;
+  preview: Record<string, unknown>[];
+};
+
+async function uploadForm<T>(path: string, formData: FormData): Promise<T> {
+  const res = await fetch(`${BASE_URL}${path}`, { method: "POST", body: formData });
+  const text = await res.text();
+  const data = text ? safeJson(text) : null;
+  if (!res.ok) {
+    const message =
+      (data && typeof data === "object" && "detail" in data
+        ? String((data as { detail: unknown }).detail)
+        : null) ?? `요청에 실패했어요 (${res.status})`;
+    throw new Error(message);
+  }
+  return data as T;
+}
+
 export const api = {
+  uploadCsv: (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return uploadForm<UploadResult>("/titanic/james/upload", formData);
+  },
+
   login: (email: string, password: string) =>
     request<LoginResponse>(
       "/login",
@@ -70,10 +95,10 @@ export const api = {
       false,
     ),
 
-  chat: (message: string, sessionId: string) =>
+  chat: (message: string) =>
     request<{ reply?: string; error?: string }>(
       "/chat",
-      { method: "POST", body: JSON.stringify({ message, session_id: sessionId }) },
+      { method: "POST", body: JSON.stringify({ message }) },
     ),
 
   passengers: () =>

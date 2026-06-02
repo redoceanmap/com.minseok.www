@@ -139,7 +139,7 @@ export default function PassengersPage() {
                 <tbody>
                   {paged.map((p, i) => (
                     <tr
-                      key={p.PassengerId ?? i}
+                      key={`${p.PassengerId}-${i}`}
                       className={`border-b-2 border-accent/30 ${i % 2 === 0 ? "bg-hull" : "bg-night-mid"}`}
                     >
                       <td className="px-2 py-1.5 text-accent/80">{p.PassengerId}</td>

@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import PixelTitanic from "@/components/PixelTitanic";
 import PixelIceberg from "@/components/PixelIceberg";
+import { api } from "@/lib/api";
 
 export default function TitanicPage() {
   const [state, setState] = useState<{
@@ -51,21 +52,11 @@ export default function TitanicPage() {
     if (!state.file) return;
     setState(prev => ({ ...prev, loading: true, error: null, result: null }));
     try {
-      const formData = new FormData();
-      formData.append("file", state.file);
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/titanic/james/upload`,
-        { method: "POST", body: formData }
-      );
-      if (!res.ok) {
-        const err = await res.json();
-        setState(prev => ({ ...prev, loading: false, error: err.detail ?? "업로드 실패" }));
-        return;
-      }
-      const json = await res.json();
-      setState(prev => ({ ...prev, loading: false, result: json }));
-    } catch {
-      setState(prev => ({ ...prev, loading: false, error: "서버 연결 실패" }));
+      const result = await api.uploadCsv(state.file);
+      setState(prev => ({ ...prev, loading: false, result }));
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "서버 연결 실패";
+      setState(prev => ({ ...prev, loading: false, error: message }));
     }
   };
 

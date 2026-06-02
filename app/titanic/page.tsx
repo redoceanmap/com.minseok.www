@@ -34,15 +34,17 @@ const DAYS_KR = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const pad2 = (n: number) => String(n).padStart(2, "0");
 
 export default function HomePage() {
-  const [input, setInput] = useState("");
-  const [reply, setReply] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [weather, setWeather] = useState<Weather | null>(null);
-  const [now, setNow] = useState<Date | null>(null);
+  const [state, setState] = useState<{
+    input: string;
+    reply: string;
+    loading: boolean;
+    weather: Weather | null;
+    now: Date | null;
+  }>({ input: "", reply: "", loading: false, weather: null, now: null });
 
   useEffect(() => {
-    setNow(new Date());
-    const timer = setInterval(() => setNow(new Date()), 60000);
+    setState(s => ({ ...s, now: new Date() }));
+    const timer = setInterval(() => setState(s => ({ ...s, now: new Date() })), 60000);
     return () => clearInterval(timer);
   }, []);
 
@@ -51,26 +53,24 @@ export default function HomePage() {
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
         api.weather(coords.latitude, coords.longitude)
-          .then(setWeather)
-          .catch(() => setWeather(null));
+          .then(weather => setState(s => ({ ...s, weather })))
+          .catch(() => setState(s => ({ ...s, weather: null })));
       },
-      () => setWeather(null),
+      () => setState(s => ({ ...s, weather: null })),
     );
   }, []);
 
   const handleSubmit = async () => {
-    const msg = input.trim();
-    if (!msg || loading) return;
-    setLoading(true);
-    setReply("");
+    const msg = state.input.trim();
+    if (!msg || state.loading) return;
+    setState(s => ({ ...s, loading: true, reply: "" }));
     try {
-      const res = await api.chat(msg, "titanic");
-      setReply(res.reply ?? res.error ?? "");
+      const res = await api.chat(msg);
+      setState(s => ({ ...s, reply: res.reply ?? res.error ?? "" }));
     } catch {
-      setReply("전송에 실패했어요. 다시 시도해 주세요");
+      setState(s => ({ ...s, reply: "전송에 실패했어요. 다시 시도해 주세요" }));
     } finally {
-      setLoading(false);
-      setInput("");
+      setState(s => ({ ...s, loading: false, input: "" }));
     }
   };
 
@@ -107,25 +107,25 @@ export default function HomePage() {
         </p>
 
         {/* 픽셀 날씨 위젯 — 검색 박스 위 */}
-        {weather && !weather.error && weather.temp !== undefined && (
+        {state.weather && !state.weather.error && state.weather.temp !== undefined && (
           <div className="mt-10 w-full max-w-xl bg-hull border-4 border-accent shadow-pixel-lg">
             <div className="bg-accent px-3 py-1 border-b-4 border-black flex items-center justify-between">
               <span className="pixel-text text-[10px] text-hull">
                 ▼ WEATHER STATION
               </span>
               <span className="pixel-text text-[10px] text-hull">
-                {weather.city}
+                {state.weather.city}
               </span>
             </div>
             <div className="px-3 sm:px-4 py-3 flex items-center justify-between gap-2 sm:gap-3">
               <div className="flex flex-col">
                 <span className="pixel-text text-[8px] text-accent/70 hidden sm:block">
-                  {now
-                    ? `${now.getFullYear()}.${pad2(now.getMonth() + 1)}.${pad2(now.getDate())} ${DAYS_KR[now.getDay()]}`
+                  {state.now
+                    ? `${state.now.getFullYear()}.${pad2(state.now.getMonth() + 1)}.${pad2(state.now.getDate())} ${DAYS_KR[state.now.getDay()]}`
                     : ""}
                 </span>
                 <span className="pixel-text text-base sm:text-lg text-accent leading-tight sm:mt-1">
-                  {now ? `${pad2(now.getHours())}:${pad2(now.getMinutes())}` : "--:--"}
+                  {state.now ? `${pad2(state.now.getHours())}:${pad2(state.now.getMinutes())}` : "--:--"}
                 </span>
               </div>
 
@@ -133,29 +133,29 @@ export default function HomePage() {
 
               <div className="flex flex-col">
                 <span className="pixel-text text-sm sm:text-base text-accent leading-none">
-                  {Math.round(weather.temp)}°C
+                  {Math.round(state.weather.temp)}°C
                 </span>
                 <span className="pixel-text text-[8px] text-accent/70 mt-1">
-                  FEELS {Math.round(weather.feels_like ?? weather.temp)}°
+                  FEELS {Math.round(state.weather.feels_like ?? state.weather.temp)}°
                 </span>
                 <span className="pixel-text text-[8px] text-accent/70">
-                  HUM {weather.humidity}%
+                  HUM {state.weather.humidity}%
                 </span>
               </div>
 
               <div className="hidden sm:block w-1 h-10 bg-accent/40" />
 
               <div className="flex items-center gap-1.5 sm:gap-2">
-                {weather.icon && (
+                {state.weather.icon && (
                   <img
-                    src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
-                    alt={weather.description ?? ""}
+                    src={`https://openweathermap.org/img/wn/${state.weather.icon}@2x.png`}
+                    alt={state.weather.description ?? ""}
                     className="h-9 w-9 sm:h-12 sm:w-12"
                     style={{ imageRendering: "pixelated" }}
                   />
                 )}
                 <span className="pixel-text text-[10px] text-accent hidden sm:inline max-w-[120px]">
-                  {weather.description}
+                  {state.weather.description}
                 </span>
               </div>
             </div>
@@ -174,31 +174,31 @@ export default function HomePage() {
               <span className="pixel-text text-xs text-accent cursor-blink">&gt;</span>
               <input
                 type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
+                value={state.input}
+                onChange={(e) => setState(s => ({ ...s, input: e.target.value }))}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
                     handleSubmit();
                   }
                 }}
-                placeholder={loading ? "전송 중..." : "무엇이 궁금하신가요?"}
-                disabled={loading}
+                placeholder={state.loading ? "전송 중..." : "무엇이 궁금하신가요?"}
+                disabled={state.loading}
                 className="flex-1 bg-transparent outline-none text-ink placeholder:text-muted text-sm font-sans disabled:opacity-50"
               />
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={loading || !input.trim()}
+                disabled={state.loading || !state.input.trim()}
                 className="pixel-text text-[10px] text-hull bg-accent px-3 py-1.5 border-2 border-black hover:opacity-80 disabled:opacity-40 transition"
               >
-                {loading ? "..." : "SEND"}
+                {state.loading ? "..." : "SEND"}
               </button>
             </div>
-            {reply && (
+            {state.reply && (
               <div className="border-t-4 border-black px-4 py-3">
                 <p className="pixel-text text-[10px] text-accent/60 mb-1">RECEIVED:</p>
-                <p className="text-sm font-sans text-ink/90 leading-relaxed whitespace-pre-wrap">{reply}</p>
+                <p className="text-sm font-sans text-ink/90 leading-relaxed whitespace-pre-wrap">{state.reply}</p>
               </div>
             )}
           </div>
