@@ -9,6 +9,7 @@ import PixelAuthModal from "@/components/PixelAuthModal";
 const TITANIC_MENU = [
   { href: "/titanic/predict", icon: "⚓", label: "CSV 업로드" },
   { href: "/titanic/passengers", icon: "📋", label: "승객 명단" },
+  { href: "/titanic/smith", icon: "🎩", label: "스미스 선장과 대화" },
 ];
 
 export default function NavBar() {
