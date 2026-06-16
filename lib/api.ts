@@ -97,7 +97,7 @@ export const api = {
 
   chat: (message: string) =>
     request<{ reply?: string; error?: string }>(
-      "/chat",
+      "/api/titanic/smith/chat",
       { method: "POST", body: JSON.stringify({ message }) },
     ),
 

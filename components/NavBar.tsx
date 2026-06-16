@@ -28,8 +28,8 @@ export default function NavBar() {
         <div className="mx-auto max-w-6xl px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
           <div className="flex items-center gap-1.5 sm:gap-3 text-xs pixel-text">
             <Link href="/titanic" className="flex items-center gap-2 text-ink font-bold pixel-text text-xs sm:text-sm">
-              <span className="relative w-8 h-8 sm:w-9 sm:h-9 bg-accent border-2 sm:border-4 border-black grid place-items-center text-hull text-sm animate-flicker">
-                ☼
+              <span className="relative w-10 h-9 sm:w-11 sm:h-10 bg-accent border-2 sm:border-4 border-black overflow-hidden inline-flex items-end justify-center text-hull animate-flicker">
+                <span className="text-4xl sm:text-5xl leading-none translate-y-1">🚢</span>
               </span>
               <span className="hidden sm:inline text-shadow-pixel">TITANIC</span>
             </Link>
