@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useUIStore } from "@/lib/uiStore";
 import { clearSession } from "@/lib/auth";
 import PixelAuthModal from "@/components/PixelAuthModal";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const TITANIC_MENU = [
   { href: "/titanic/predict", icon: "⚓", label: "CSV 업로드" },
@@ -39,6 +40,7 @@ export default function NavBar() {
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-3 text-xs pixel-text">
+            <ThemeToggle className="p-1.5 sm:p-2 border-2 sm:border-4 border-accent bg-hull text-accent hover:bg-night-mid transition-colors" />
             <BrassPlateDropdown badge="DECK" icon="⚓" items={TITANIC_MENU}>
               타이타닉
             </BrassPlateDropdown>

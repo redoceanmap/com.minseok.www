@@ -2,6 +2,9 @@
 @import "tailwindcss";
 @config "../tailwind.config.ts";
 
+/* class 기반 다크모드 (next-themes attribute="class") */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* 한글 픽셀 폰트 — Galmuri11/14 */
 @font-face {
   font-family: "Galmuri11";
@@ -27,6 +30,16 @@
   --border: #E8E2D9;
   --brand: #722F37;
   --brand-deep: #4A1D24;
+}
+
+.dark {
+  --background: #1A1614;
+  --surface: #242018;
+  --foreground: #F0EDE8;
+  --foreground-muted: #A8A29A;
+  --border: #3A332E;
+  --brand: #C9818A;
+  --brand-deep: #E0A4AB;
 }
 
 @theme inline {

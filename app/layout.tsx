@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Noto_Sans_KR, Press_Start_2P } from "next/font/google";
 import "./globals.css";
 import AuthHydrator from "@/components/AuthHydrator";
+import ThemeProvider from "@/components/ThemeProvider";
 
 const noto = Noto_Sans_KR({
   subsets: ["latin"],
@@ -30,11 +31,14 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
+      suppressHydrationWarning
       className={`${noto.variable} ${pressStart.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
-        <AuthHydrator />
-        {children}
+        <ThemeProvider>
+          <AuthHydrator />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Plus, MessageSquare, MapPin, Bookmark, Anchor } from "lucide-react";
 import Wordmark from "./Wordmark";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useUIStore } from "@/lib/uiStore";
 
 const navItems = [
@@ -33,6 +34,7 @@ export default function TopNav() {
       </nav>
 
       <div className="ml-auto flex items-center gap-2">
+        <ThemeToggle />
         <Link
           href="/titanic"
           className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground/80 px-3 py-1.5 rounded-full border border-border hover:border-brand/40 hover:text-foreground transition-colors"
