@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Plus, MessageSquare, MapPin, Bookmark, Anchor } from "lucide-react";
+import { Plus, MessageSquare, MapPin, Bookmark, Anchor, Zap } from "lucide-react";
 import Wordmark from "./Wordmark";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useUIStore } from "@/lib/uiStore";
@@ -15,6 +15,7 @@ const navItems = [
 
 export default function TopNav() {
   const openAuth = useUIStore((s) => s.openAuth);
+  const openAutomation = useUIStore((s) => s.openAutomation);
 
   return (
     <header className="h-14 flex items-center px-4 md:px-6 gap-4 md:gap-8">
@@ -31,6 +32,14 @@ export default function TopNav() {
             {label}
           </Link>
         ))}
+        <button
+          type="button"
+          onClick={openAutomation}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-foreground/80 hover:bg-black/5 hover:text-foreground transition-colors"
+        >
+          <Zap size={15} strokeWidth={1.75} className="text-brand" />
+          자동화
+        </button>
       </nav>
 
       <div className="ml-auto flex items-center gap-2">

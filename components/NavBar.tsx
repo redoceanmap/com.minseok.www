@@ -5,18 +5,21 @@ import { useState } from "react";
 import { useUIStore } from "@/lib/uiStore";
 import { clearSession } from "@/lib/auth";
 import PixelAuthModal from "@/components/PixelAuthModal";
+import AutomationModal from "@/components/seoul/AutomationModal";
 import ThemeToggle from "@/components/ThemeToggle";
-
-const TITANIC_MENU = [
-  { href: "/titanic/predict", icon: "⚓", label: "CSV 업로드" },
-  { href: "/titanic/passengers", icon: "📋", label: "승객 명단" },
-  { href: "/titanic/smith", icon: "🎩", label: "스미스 선장과 대화" },
-];
 
 export default function NavBar() {
   const user = useUIStore((s) => s.user);
   const setUser = useUIStore((s) => s.setUser);
   const openAuth = useUIStore((s) => s.openAuth);
+  const openAutomation = useUIStore((s) => s.openAutomation);
+
+  const titanicMenu: DropdownItem[] = [
+    { href: "/titanic/predict", icon: "⚓", label: "CSV 업로드" },
+    { href: "/titanic/passengers", icon: "📋", label: "승객 명단" },
+    { href: "/titanic/smith", icon: "🎩", label: "스미스 선장과 대화" },
+    { onClick: openAutomation, icon: "⚡", label: "자동화" },
+  ];
 
   const handleLogout = () => {
     clearSession();
@@ -41,7 +44,7 @@ export default function NavBar() {
 
           <div className="flex items-center gap-1.5 sm:gap-3 text-xs pixel-text">
             <ThemeToggle className="p-1.5 sm:p-2 border-2 sm:border-4 border-accent bg-hull text-accent hover:bg-night-mid transition-colors" />
-            <BrassPlateDropdown badge="DECK" icon="⚓" items={TITANIC_MENU}>
+            <BrassPlateDropdown badge="DECK" icon="⚓" items={titanicMenu}>
               타이타닉
             </BrassPlateDropdown>
             {user ? (
@@ -62,12 +65,14 @@ export default function NavBar() {
         </div>
       </header>
       <PixelAuthModal />
+      <AutomationModal />
     </>
   );
 }
 
 interface DropdownItem {
-  href: string;
+  href?: string;
+  onClick?: () => void;
   icon: string;
   label: string;
 }
@@ -112,17 +117,41 @@ function BrassPlateDropdown({ badge, icon, children, items }: BrassPlateDropdown
 
       {open && (
         <div className="absolute right-0 top-full mt-1 z-50 bg-hull border-4 border-accent shadow-pixel-lg min-w-[140px]">
-          {items.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 pixel-text text-[10px] text-accent hover:bg-night-mid border-b-2 border-accent/30 last:border-b-0 whitespace-nowrap"
-            >
-              <span>{item.icon}</span>
-              <span>{item.label}</span>
-            </Link>
-          ))}
+          {items.map((item) => {
+            const itemClass =
+              "flex w-full items-center gap-2 px-3 py-2 pixel-text text-[10px] text-accent hover:bg-night-mid border-b-2 border-accent/30 last:border-b-0 whitespace-nowrap text-left";
+            const inner = (
+              <>
+                <span>{item.icon}</span>
+                <span>{item.label}</span>
+              </>
+            );
+            if (item.href) {
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className={itemClass}
+                >
+                  {inner}
+                </Link>
+              );
+            }
+            return (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  item.onClick?.();
+                }}
+                className={itemClass}
+              >
+                {inner}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

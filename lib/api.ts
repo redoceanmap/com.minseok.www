@@ -101,6 +101,13 @@ export const api = {
       { method: "POST", body: JSON.stringify({ message }) },
     ),
 
+  dispatchEmail: (to: string, topic: string) =>
+    request<{ status: string; detail: string }>(
+      "/api/sherlock/watson/email/dispatch",
+      { method: "POST", body: JSON.stringify({ to, topic }) },
+      false,
+    ),
+
   passengers: () =>
     request<Passenger[]>("/titanic/walter/passengers"),
 
