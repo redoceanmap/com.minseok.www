@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useUIStore } from "@/lib/uiStore";
 import { clearSession } from "@/lib/auth";
 import PixelAuthModal from "@/components/PixelAuthModal";
-import AutomationModal from "@/components/seoul/AutomationModal";
+import PixelAutomationModal from "@/components/PixelAutomationModal";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export default function NavBar() {
@@ -19,6 +19,7 @@ export default function NavBar() {
     { href: "/titanic/passengers", icon: "📋", label: "승객 명단" },
     { href: "/titanic/smith", icon: "🎩", label: "스미스 선장과 대화" },
     { onClick: openAutomation, icon: "⚡", label: "자동화" },
+    { href: "/titanic/contacts", icon: "📇", label: "주소록" },
   ];
 
   const handleLogout = () => {
@@ -65,7 +66,7 @@ export default function NavBar() {
         </div>
       </header>
       <PixelAuthModal />
-      <AutomationModal />
+      <PixelAutomationModal />
     </>
   );
 }

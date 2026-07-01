@@ -10,6 +10,7 @@ import {
   Upload,
   Settings,
   Anchor,
+  BookUser,
 } from "lucide-react";
 
 const NAV = [
@@ -18,6 +19,10 @@ const NAV = [
   { icon: Users, label: "사용자", href: "/admin/users" },
   { icon: MessageSquare, label: "채팅 로그", href: "/admin/chats" },
   { icon: Upload, label: "데이터", href: "/admin/data" },
+] as const;
+
+const MAIL_NAV = [
+  { icon: BookUser, label: "주소록", href: "/admin/contacts" },
 ] as const;
 
 /**
@@ -59,6 +64,27 @@ export default function AdminSidebar() {
               </Link>
             );
           })}
+
+          <p className="px-3 pt-5 pb-1 text-xs font-semibold uppercase tracking-wide text-foreground-muted">
+            메일관리
+          </p>
+          {MAIL_NAV.map(({ icon: Icon, label, href }) => {
+            const active = isActive(href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                  active
+                    ? "bg-brand text-white"
+                    : "text-foreground-muted hover:bg-black/5 hover:text-foreground"
+                }`}
+              >
+                <Icon size={18} strokeWidth={active ? 2.2 : 1.8} />
+                {label}
+              </Link>
+            );
+          })}
         </nav>
 
         <Link
@@ -72,7 +98,7 @@ export default function AdminSidebar() {
 
       {/* 모바일 하단 탭바 */}
       <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 flex items-stretch border-t border-border bg-surface/95 backdrop-blur pb-[env(safe-area-inset-bottom)]">
-        {NAV.map(({ icon: Icon, label, href }) => {
+        {[...NAV, ...MAIL_NAV].map(({ icon: Icon, label, href }) => {
           const active = isActive(href);
           return (
             <Link

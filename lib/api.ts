@@ -60,6 +60,14 @@ export type UploadResult = {
   preview: Record<string, unknown>[];
 };
 
+export type ContactItem = {
+  id: number;
+  name: string;
+  nickname: string;
+  email: string;
+  phone: string;
+};
+
 async function uploadForm<T>(path: string, formData: FormData): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, { method: "POST", body: formData });
   const text = await res.text();
@@ -80,6 +88,15 @@ export const api = {
     formData.append("file", file);
     return uploadForm<UploadResult>("/titanic/james/upload", formData);
   },
+
+  uploadContacts: (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return uploadForm<{ saved: number }>("/api/sherlock/juso/upload", formData);
+  },
+
+  listContacts: () =>
+    request<ContactItem[]>("/api/sherlock/juso/contacts", { method: "GET" }, false),
 
   login: (email: string, password: string) =>
     request<LoginResponse>(
@@ -105,6 +122,14 @@ export const api = {
     request<{ status: string; detail: string }>(
       "/api/sherlock/watson/email/dispatch",
       { method: "POST", body: JSON.stringify({ to, topic }) },
+      false,
+    ),
+
+  // 허브(star_craft) 경유: 프론트 → star_craft(온톨로지 지시) → 셜록홈즈(2.4b 작성+발송)
+  requestEmail: (to: string, content: string) =>
+    request<{ status: string; detail: string }>(
+      "/api/star_craft/email/request",
+      { method: "POST", body: JSON.stringify({ to, content }) },
       false,
     ),
 
