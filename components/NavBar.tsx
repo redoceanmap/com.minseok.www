@@ -20,6 +20,7 @@ export default function NavBar() {
     { href: "/titanic/smith", icon: "🎩", label: "스미스 선장과 대화" },
     { onClick: openAutomation, icon: "⚡", label: "자동화" },
     { href: "/titanic/contacts", icon: "📇", label: "주소록" },
+    { href: "/titanic/mailbox", icon: "📬", label: "받은 메일함" },
   ];
 
   const handleLogout = () => {

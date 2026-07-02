@@ -68,6 +68,16 @@ export type ContactItem = {
   phone: string;
 };
 
+export type InboundMailItem = {
+  id: number;
+  message_id: string;
+  subject: string;
+  sender: string;
+  recipient: string;
+  preview: string;
+  received_at: string;
+};
+
 async function uploadForm<T>(path: string, formData: FormData): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, { method: "POST", body: formData });
   const text = await res.text();
@@ -97,6 +107,9 @@ export const api = {
 
   listContacts: () =>
     request<ContactItem[]>("/api/sherlock/juso/contacts", { method: "GET" }, false),
+
+  listInboundMails: () =>
+    request<InboundMailItem[]>("/api/sherlock/mail/list", { method: "GET" }, false),
 
   login: (email: string, password: string) =>
     request<LoginResponse>(

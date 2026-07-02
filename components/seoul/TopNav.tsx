@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Plus, MessageSquare, MapPin, Bookmark, Anchor, Zap } from "lucide-react";
+import { Plus, MessageSquare, MapPin, Bookmark, Anchor, Zap, Inbox } from "lucide-react";
 import Wordmark from "./Wordmark";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useUIStore } from "@/lib/uiStore";
@@ -32,14 +32,27 @@ export default function TopNav() {
             {label}
           </Link>
         ))}
-        <button
-          type="button"
-          onClick={openAutomation}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-foreground/80 hover:bg-black/5 hover:text-foreground transition-colors"
-        >
-          <Zap size={15} strokeWidth={1.75} className="text-brand" />
-          자동화
-        </button>
+        <div className="relative group">
+          <button
+            type="button"
+            onClick={openAutomation}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-foreground/80 hover:bg-black/5 hover:text-foreground transition-colors"
+          >
+            <Zap size={15} strokeWidth={1.75} className="text-brand" />
+            자동화
+          </button>
+          <div className="absolute left-0 top-full pt-1 hidden group-hover:block z-50">
+            <div className="min-w-[140px] bg-background border border-border rounded-lg shadow-lg py-1">
+              <Link
+                href="/mailbox"
+                className="flex items-center gap-2 px-3 py-2 text-sm text-foreground/80 hover:bg-black/5 hover:text-foreground transition-colors"
+              >
+                <Inbox size={15} strokeWidth={1.75} className="text-brand" />
+                메일함
+              </Link>
+            </div>
+          </div>
+        </div>
       </nav>
 
       <div className="ml-auto flex items-center gap-2">
